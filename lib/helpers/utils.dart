@@ -4,22 +4,30 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'colors.dart';
+import 'constants.dart';
 
+// This is the config for easy loading indicator.
 void initEastLoading() {
   EasyLoading.instance
-    ..indicatorType = EasyLoadingIndicatorType.hourGlass
+    ..indicatorType = EasyLoadingIndicatorType.circle
     ..loadingStyle = EasyLoadingStyle.custom
     ..maskType = EasyLoadingMaskType.none
     ..indicatorSize = 40.0
     ..radius = 8.0
     ..progressColor = AppColors.TRANSPARENT
-    ..backgroundColor = AppColors.SILVER
-    ..indicatorColor = AppColors.YELLOW
+    ..backgroundColor = AppColors.GRAY_LIGHT.withOpacity(0.5)
+    ..indicatorColor = AppColors.ORANGE
     ..textColor = AppColors.TRANSPARENT
     ..boxShadow = <BoxShadow>[]
     ..userInteractions = false;
 }
 
+// Check device locale is Chinese.
+bool isChinese(BuildContext context) {
+  return context.deviceLocale.languageCode == Constants.ZH;
+}
+
+// Convert milliseconds timestamp to DateTime in String.
 String? formatTimestamp(int? ms, String fmt) {
   if (ms == null) return null;
   var dateTime = DateTime.fromMillisecondsSinceEpoch(ms);
@@ -27,6 +35,7 @@ String? formatTimestamp(int? ms, String fmt) {
   return formattedDate;
 }
 
+// This extension is for compare given datetime is today, yesterday, ot tomorrow.
 extension DateHelpers on DateTime {
   bool isToday() {
     final now = DateTime.now();

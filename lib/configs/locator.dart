@@ -5,9 +5,10 @@ import 'package:get_it/get_it.dart';
 import '/services/navigation_service.dart';
 import '/services/preferences_service.dart';
 
+// This is our global ServiceLocator.
 GetIt locator = GetIt.instance;
 
-Future initLocator() async {
+Future initServiceLocator() async {
   navigation();
   preferences();
 }

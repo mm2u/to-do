@@ -5,29 +5,25 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:after_layout/after_layout.dart';
-import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:countdown_widget/countdown_widget.dart';
+import 'package:sizer/sizer.dart';
 
-import '/helpers/enums.dart';
 import '/helpers/colors.dart';
 import '/helpers/styles.dart';
 import '/helpers/constants.dart';
 import '/helpers/argument.dart';
 import '/helpers/utils.dart';
 
-import '/configs/locator.dart';
 import '/configs/routes_handler.dart';
 
 import '/models/data_model.dart';
 
 import '/stores/base_store.dart';
 
-import '/services/navigation_service.dart';
-
-import '/ui/widgets/app_bar.dart';
+import '/ui/widgets/appbar.dart';
 
 class DashboardPage extends StatefulWidget {
 
@@ -51,7 +47,6 @@ class DashboardPageState extends State<DashboardPage> with WidgetsBindingObserve
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _baseStore.globalState.setBaseStore(null);
     super.dispose();
   }
 
@@ -62,8 +57,9 @@ class DashboardPageState extends State<DashboardPage> with WidgetsBindingObserve
     } else if (state == AppLifecycleState.inactive) {
     } else if (state == AppLifecycleState.detached) {
     }
+
+    // Checking app state is in foreground or background.
     _baseStore.globalState.isInForeground = state == AppLifecycleState.resumed;
-    print('foreground : ${_baseStore.globalState.isInForeground}');
   }
 
   @override
@@ -73,7 +69,8 @@ class DashboardPageState extends State<DashboardPage> with WidgetsBindingObserve
 
   init() async {
 
-    _baseStore.initBaseData(_baseStore);
+    // Get ready for startup the current pages.
+    _baseStore.initBaseData();
 
   }
 
@@ -85,9 +82,17 @@ class DashboardPageState extends State<DashboardPage> with WidgetsBindingObserve
     return Expanded(
       child: Observer(
         builder: (_) {
+          // Show empty pages if Hive database haven't initialized.
+          if (!_baseStore.getIsLoadedHive) return Container();
           var list = _baseStore.getTodoList;
+          // Show empty data description on the screen if no data found.
           if (list.isEmpty) {
-            return Container();
+            return Center(
+              child: SizedBox(
+                width: 30.h,
+                child: Text('NoDataDesc'.tr(), textAlign: TextAlign.center, style: textStyleLabel18),
+              ),
+            );
           }
           return ListView(
             shrinkWrap: true,
@@ -119,13 +124,15 @@ class DashboardPageState extends State<DashboardPage> with WidgetsBindingObserve
     var startDate = data.startDate;
     var endDate = data.endDate;
 
-    var startDateString = formatTimestamp(startDate, context.deviceLocale.languageCode == Constants.ZH ? Constants.FORMAT_DATE3 : Constants.FORMAT_DATE1);
-    var endDateString = formatTimestamp(endDate, context.deviceLocale.languageCode == Constants.ZH ? Constants.FORMAT_DATE3 : Constants.FORMAT_DATE1);
+    // Format the timestamp to readable datetime string base on locales.
+    var startDateString = formatTimestamp(startDate, isChinese(context) ? Constants.FORMAT_DATE3 : Constants.FORMAT_DATE1);
+    var endDateString = formatTimestamp(endDate, isChinese(context) ? Constants.FORMAT_DATE3 : Constants.FORMAT_DATE1);
 
-    bool isToday = DateTime.fromMillisecondsSinceEpoch(data.startDate!).isToday();
+    // Compare the different with the end date timestamp.
     Duration duration = DateTime.fromMillisecondsSinceEpoch(data.endDate!).difference(DateTime.now());
 
-    var status = data.checked ? StatusEnum.COMPLETE.toShortString() : StatusEnum.INCOMPLETE.toShortString();
+    // Get the status for the to-do items. If checked means completed.
+    String status = data.checked ? 'Completed'.tr() : 'InComplete'.tr();
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -133,14 +140,12 @@ class DashboardPageState extends State<DashboardPage> with WidgetsBindingObserve
           currentFocus.focusedChild?.unfocus();
         }
 
+        // Here to set details page is editing. [true] is for update to-do items.
         _baseStore.setIsEditing(true);
         _baseStore.setTodoListData(data);
 
-        Routes.router.navigateTo(context, Routes.details, routeSettings: RouteSettings(arguments: BaseArguments(_baseStore)), transition: TransitionType.none).then((onValue) {
-          if (onValue != null && onValue) {
-
-          }
-        });
+        // Navigate to the details page with arguments.
+        Routes.router.navigateTo(context, Routes.details, routeSettings: RouteSettings(arguments: BaseArguments(_baseStore)), transition: TransitionType.none);
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 5.0),
@@ -188,15 +193,12 @@ class DashboardPageState extends State<DashboardPage> with WidgetsBindingObserve
                   ),
                   Expanded(
                     flex: 1,
-                    child: isToday ? CountDownWidget(
+                    child: CountDownWidget(
                       duration: duration,
                       builder: (context, duration) {
-                        return Text('${duration.inHours.toString()} hrs ${duration.inMinutes.remainder(60).toString().padLeft(2, '0')} min', style: textStyleTitle16);
+                        return Text('TimeLeftParams'.tr(args: ['${duration.inHours.toString()}', '${duration.inMinutes.remainder(60).toString().padLeft(2, '0')}']), style: textStyleTitle16);
                       },
-                      onDurationRemainChanged: (duration) {
-                        print('duration:${duration.toString()}');
-                      },
-                    ) : Text('${duration.inHours.toString()} hrs ${duration.inMinutes.remainder(60).toString().padLeft(2, '0')} min', style: textStyleTitle16),
+                    ),
                   ),
                 ],
               ),
@@ -239,10 +241,10 @@ class DashboardPageState extends State<DashboardPage> with WidgetsBindingObserve
                             checkColor: AppColors.ORANGE,
                             fillColor: MaterialStateProperty.all(AppColors.TRANSPARENT),
                             value: data.checked,
-                            onChanged: (bool? value) {
-                              print('checked : $value');
-
+                            onChanged: (bool? value) async {
                               data.checked = !data.checked;
+
+                              _baseStore.update();
                             },
                           ),
                         ),
@@ -262,6 +264,7 @@ class DashboardPageState extends State<DashboardPage> with WidgetsBindingObserve
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        // To close the keyboard (if visible) when press anywhere in app.
         FocusScopeNode currentFocus = FocusScope.of(context);
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.focusedChild?.unfocus();
@@ -270,52 +273,44 @@ class DashboardPageState extends State<DashboardPage> with WidgetsBindingObserve
       },
       child: WillPopScope(
         onWillPop: () {
-          DateTime? now = DateTime.now();
-          bool doubleTap = _baseStore.getCurrentBackPressTime == null ? true : now.difference(_baseStore.getCurrentBackPressTime ?? DateTime.now()) > Duration(seconds: 2);
-
+          // To handle back key button (hardware) pressed on some devices.
+          var doubleTap = _baseStore.onBackPressed();
           if (doubleTap) {
-            BotToast.showText(text: 'ExitAppDesc'.tr());
-
-            _baseStore.setCurrentBackPressTime(now);
+            SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+            return Future.value(true);
+          } else {
             return Future.value(false);
           }
-          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-          return Future.value(true);
         },
         child: SafeArea(
           bottom: Platform.isAndroid,
-          child: Observer(
-            builder: (_) => Scaffold(
-              key: locator<NavigationService>().dashboardScaffoldKey,
-              backgroundColor: AppColors.WHITE,
-              appBar: CustomAppBar(title: 'AppName'.tr()),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  FocusScopeNode currentFocus = FocusScope.of(context);
-                  if (!currentFocus.hasPrimaryFocus) {
-                    currentFocus.focusedChild?.unfocus();
-                  }
+          child: Scaffold(
+            backgroundColor: AppColors.WHITE,
+            appBar: CustomAppBar(title: 'AppName'.tr()),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                FocusScopeNode currentFocus = FocusScope.of(context);
+                if (!currentFocus.hasPrimaryFocus) {
+                  currentFocus.focusedChild?.unfocus();
+                }
 
-                  _baseStore.setIsEditing(false);
+                // Here to set details page is not editing. [false] is for create new to-do items.
+                _baseStore.setIsEditing(false);
 
-                  Routes.router.navigateTo(context, Routes.details, routeSettings: RouteSettings(arguments: BaseArguments(_baseStore)), transition: TransitionType.none).then((onValue) {
-                    if (onValue != null && onValue) {
-
-                    }
-                  });
-                },
-                child: Icon(Icons.add, color: AppColors.WHITE),
-              ),
-              floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-              body: Container(
-                padding: EdgeInsets.only(top: 10.0),
-                color: AppColors.SILVER,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    buildListView(),
-                  ],
-                ),
+                // Navigate to the details page with arguments.
+                Routes.router.navigateTo(context, Routes.details, routeSettings: RouteSettings(arguments: BaseArguments(_baseStore)), transition: TransitionType.none);
+              },
+              child: Icon(Icons.add, color: AppColors.WHITE),
+            ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+            body: Container(
+              padding: EdgeInsets.only(top: 10.0),
+              color: AppColors.SILVER,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  buildListView(),
+                ],
               ),
             ),
           ),

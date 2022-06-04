@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:fluro/fluro.dart';
 
-import '/ui/widgets/others_page.dart';
+import '/ui/widgets/others.dart';
 import '/ui/splash/splash_page.dart';
 import '/ui/base/dashboard_page.dart';
 import '/ui/base/details_page.dart';
@@ -26,6 +26,7 @@ class Routes {
     router.define(dashboard, handler: dashboardHandler);
     router.define(details, handler: detailsHandler);
 
+    // This is to handle when routes is not defined.
     router.notFoundHandler = Handler(
       handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
         return NotFoundPage();
@@ -47,6 +48,7 @@ var dashboardHandler = Handler(
   },
 );
 
+// Extract the arguments using [BuildContext.settings.arguments] or [BuildContext.arguments] for short.
 var detailsHandler = Handler(
   handlerFunc: (context, params) {
     BaseArguments? args = context!.settings!.arguments == null ? null : context.settings!.arguments as BaseArguments;

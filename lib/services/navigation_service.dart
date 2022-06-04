@@ -7,7 +7,6 @@ class NavigationService {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   final GlobalKey<DashboardPageState> dashboardViewKey = GlobalKey<DashboardPageState>();
-  final GlobalKey<ScaffoldState> dashboardScaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<dynamic> navigateTo(String routeName) {
     return navigatorKey.currentState!.pushNamed(routeName);

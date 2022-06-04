@@ -5,12 +5,14 @@ import 'package:easy_localization/easy_localization.dart';
 import '/helpers/styles.dart';
 import '/helpers/colors.dart';
 
+// This is the custom error widget replaced to default system.
 Widget getErrorWidget(BuildContext context, FlutterErrorDetails error) {
   return Center(
     child: Text('SomethingWentWrongWidget'.tr(), textScaleFactor: 0.7, style: Theme.of(context).textTheme.subtitle1!.copyWith(color: AppColors.GRAY_DARK)),
   );
 }
 
+// This is the custom not found page when routes cannot found.
 class NotFoundPage extends StatelessWidget {
 
   const NotFoundPage({Key? key}) : super(key: key);

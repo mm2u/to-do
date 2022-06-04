@@ -6,10 +6,6 @@ import 'package:mobx/mobx.dart';
 
 import '/helpers/constants.dart';
 
-import '/models/data_model.dart';
-
-import 'base_store.dart';
-
 part 'global_state.g.dart';
 
 class GlobalState = _GlobalState with _$GlobalState;
@@ -19,20 +15,20 @@ abstract class _GlobalState with Store {
   final boxGeneral = Hive.box(Constants.HIVE_BOX_GENERAL);
 
   @observable
-  BaseStore? baseStore;
+  DateTime? currentBackPressTime;
 
   @observable
   bool isInForeground = true;
 
   @computed
-  BaseStore? get getBaseStore => baseStore;
+  DateTime? get getCurrentBackPressTime => currentBackPressTime;
 
   @computed
   bool get getIsInForeground => isInForeground;
 
   @action
-  setBaseStore(BaseStore? value) {
-    baseStore = value;
+  setCurrentBackPressTime(DateTime value) {
+    currentBackPressTime = value;
   }
 
   @action
@@ -42,11 +38,15 @@ abstract class _GlobalState with Store {
 
   @action
   show() async {
+    // To show a loading indicator.
     await EasyLoading.show();
+    await Future.delayed(Duration(milliseconds: 100));
   }
 
   @action
   dismiss() async {
+    // To dismiss a loading indicator.
+    await Future.delayed(Duration(milliseconds: 100));
     await EasyLoading.dismiss();
   }
 

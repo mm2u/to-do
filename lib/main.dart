@@ -15,7 +15,7 @@ import 'my_app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-  await initLocator();
+  await initServiceLocator();
   final router = FluroRouter();
   Routes.configureRoutes(router);
   Routes.router = router;

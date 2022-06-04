@@ -9,6 +9,7 @@ import '/configs/locator.dart';
 
 import '/services/navigation_service.dart';
 
+// This is the custom modal bottom sheet show as dialog messages to user.
 Future showStatusWidget(String desc, bool success) {
   return showModalBottomSheet(
     context: locator<NavigationService>().context(),

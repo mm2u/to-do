@@ -41,6 +41,7 @@ class SplashPageState extends State<SplashPage> with AfterLayoutMixin<SplashPage
 
   Future loadData() async {
 
+    // Delay 1 seconds on the Splash screen before navigate to next pages.
     Future.delayed(const Duration(milliseconds: 1000), () async {
       Routes.router.navigateTo(context, Routes.dashboard, replace: true, transition: TransitionType.none);
     });

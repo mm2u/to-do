@@ -1,16 +1,19 @@
-# todo
+# To-DO List App
 
-A new Flutter project.
+This project is a simple to-do list for a Flutter application. It using a simple, scalable and powerful state management library inspired with MVC architectural pattern with very flexible dependency injection to easily instantiate any dependencies once and reuse multiple times across the app.
 
-## Getting Started
+## ScreenShoot
 
-This project is a starting point for a Flutter application.
+[![Screenshot-1654332604.png](https://i.postimg.cc/T3mQQyVv/Screenshot-1654332604.png)](https://postimg.cc/Mn6ypp39)
+[![Screenshot-1654332614.png](https://i.postimg.cc/8P7ZJXs5/Screenshot-1654332614.png)](https://postimg.cc/ykzm2Pm4)
+[![Screenshot-1654332651.png](https://i.postimg.cc/DyRBqQbc/Screenshot-1654332651.png)](https://postimg.cc/rKC1Trjd)
+[![Screenshot-1654332665.png](https://i.postimg.cc/GpCKfcK8/Screenshot-1654332665.png)](https://postimg.cc/Sngc2bwk)
+[![Screenshot-1654332711.png](https://i.postimg.cc/RFCRMXjv/Screenshot-1654332711.png)](https://postimg.cc/Ffqcpgr6)
+[![Screenshot-1654332864.png](https://i.postimg.cc/tgNkQLvr/Screenshot-1654332864.png)](https://postimg.cc/Y4jYQyHg)
+[![Screenshot-1654334478.png](https://i.postimg.cc/rynhp2V3/Screenshot-1654334478.png)](https://postimg.cc/LhPky7Z3)
 
-A few resources to get you started if this is your first Flutter project:
+## Features
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- State management with MobX.
+- Store NoSQL database using Hive.
+- Support English/Chinese based on device locale.

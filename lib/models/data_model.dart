@@ -25,6 +25,7 @@ abstract class _TodoListBase with Store {
   @observable
   int? endDate;
 
+  // This is for to-do status, true is complete, false is incomplete.
   @observable
   bool checked = false;
 

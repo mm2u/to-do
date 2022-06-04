@@ -13,7 +13,7 @@ import 'configs/locator.dart';
 import 'configs/routes_handler.dart';
 
 import 'ui/splash/splash_page.dart';
-import 'ui/widgets/others_page.dart';
+import 'ui/widgets/others.dart';
 
 import 'services/navigation_service.dart';
 
@@ -82,10 +82,7 @@ class MyAppState extends State<MyApp> {
                     fontFamily: Constants.FONT_CALIBRI,
                     colorScheme: ColorScheme.fromSwatch().copyWith(secondary: AppColors.ORANGE),
                   ),
-                  child: MediaQuery(
-                    data: MediaQuery.of(context).copyWith(textScaleFactor: Constants.DEFAULT_SCALE),
-                    child: widget,
-                  ),
+                  child: widget,
                 );
               },
             ),

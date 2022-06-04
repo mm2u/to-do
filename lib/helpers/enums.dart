@@ -1,10 +1,6 @@
-enum StatusEnum {
-  INCOMPLETE,
-  COMPLETE
-}
+import 'package:flutter/material.dart';
 
-extension MethodParseToString on StatusEnum {
-  String toShortString() {
-    return toString().split('.').last;
-  }
+enum CalenderEnum {
+  STARTED,
+  ENDED
 }

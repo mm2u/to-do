@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:after_layout/after_layout.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
+import '/helpers/enums.dart';
 import '/helpers/utils.dart';
 import '/helpers/colors.dart';
 import '/helpers/argument.dart';
@@ -14,7 +14,7 @@ import '/helpers/constants.dart';
 
 import '/stores/base_store.dart';
 
-import '../widgets/modal_bottom_sheets.dart';
+import '/ui/widgets/dialogs.dart';
 
 class DetailsPage extends StatefulWidget {
 
@@ -49,17 +49,19 @@ class DetailsPageState extends State<DetailsPage> with AfterLayoutMixin<DetailsP
 
   init() async {
 
+    // Here to retrieve the arguments from previous pages.
     var arguments = widget.arguments;
     if (arguments != null) _baseStore = arguments.store;
 
+    // Get ready for startup the details pages.
     _baseStore.initDetails();
   }
 
   Future loadData() async {
 
+    // This is to handle keyboard visibility. Used to hide some widgets in the pages.
     var keyboardVisibilityController = KeyboardVisibilityController();
     keyboardVisibilityController.onChange.listen((bool visible) {
-      print('keyboard visible: $visible');
       _baseStore.setKeyboardOpened(visible);
     });
 
@@ -91,8 +93,9 @@ class DetailsPageState extends State<DetailsPage> with AfterLayoutMixin<DetailsP
           var startDate = _baseStore.getTodoListData?.startDate;
           var endDate = _baseStore.getTodoListData?.endDate;
 
-          var startDateString = formatTimestamp(startDate, context.deviceLocale.languageCode == Constants.ZH ? Constants.FORMAT_DATE2 : Constants.FORMAT_DATE1);
-          var endDateString = formatTimestamp(endDate, context.deviceLocale.languageCode == Constants.ZH ? Constants.FORMAT_DATE2 : Constants.FORMAT_DATE1);
+          // Format the timestamp to readable datetime string base on locales.
+          var startDateString = formatTimestamp(startDate, isChinese(context) ? Constants.FORMAT_DATE2 : Constants.FORMAT_DATE1);
+          var endDateString = formatTimestamp(endDate, isChinese(context) ? Constants.FORMAT_DATE2 : Constants.FORMAT_DATE1);
           return ListView(
             padding: EdgeInsets.only(bottom: 30.0),
             shrinkWrap: true,
@@ -108,6 +111,7 @@ class DetailsPageState extends State<DetailsPage> with AfterLayoutMixin<DetailsP
                     TextFormField (
                       controller: _baseStore.titleController,
                       keyboardType: TextInputType.multiline,
+                      textCapitalization: TextCapitalization.sentences,
                       minLines: 1,
                       maxLines: 8,
                       style: textStyleLabel16,
@@ -142,7 +146,8 @@ class DetailsPageState extends State<DetailsPage> with AfterLayoutMixin<DetailsP
                           currentFocus.unfocus();
                         }
 
-                        _baseStore.showCalenderPicker(context, true);
+                        // This is to show the calender widget. CalenderEnum.STARTED is define for started date.
+                        _baseStore.showCalenderPicker(context, CalenderEnum.STARTED);
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
@@ -181,7 +186,8 @@ class DetailsPageState extends State<DetailsPage> with AfterLayoutMixin<DetailsP
                           currentFocus.unfocus();
                         }
 
-                        _baseStore.showCalenderPicker(context, false);
+                        // This is to show the calender widget. CalenderEnum.ENDED is define for ended date.
+                        _baseStore.showCalenderPicker(context, CalenderEnum.ENDED);
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
@@ -241,49 +247,44 @@ class DetailsPageState extends State<DetailsPage> with AfterLayoutMixin<DetailsP
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        var loading = EasyLoading.isShow;
-        return Future.value(!loading);
+    return GestureDetector(
+      onTap: () {
+        // To close the keyboard (if visible) when press anywhere in app.
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.focusedChild?.unfocus();
+        }
+
       },
-      child: GestureDetector(
-        onTap: () {
-          FocusScopeNode currentFocus = FocusScope.of(context);
-          if (!currentFocus.hasPrimaryFocus) {
-            currentFocus.focusedChild?.unfocus();
-          }
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: AppColors.SILVER,
+          appBar: AppBar(
+            backgroundColor: AppColors.YELLOW,
+            toolbarHeight: 60.0,
+            title: Text(_baseStore.getIsEditing ? 'EditTitle'.tr() : 'AddNewTitle'.tr(), style: appBarTitleDarkTextStyle),
+            centerTitle: false,
+            elevation: 2.0,
+            titleSpacing: 0.0,
+            leading: IconButton(
+              iconSize: 18.0,
+              icon: Icon(Icons.arrow_back_ios_new),
+              onPressed: () {
+                FocusScopeNode currentFocus = FocusScope.of(context);
+                if (!currentFocus.hasPrimaryFocus) {
+                  currentFocus.focusedChild?.unfocus();
+                }
 
-        },
-        child: SafeArea(
-          child: Scaffold(
-            backgroundColor: AppColors.SILVER,
-            appBar: AppBar(
-              backgroundColor: AppColors.YELLOW,
-              toolbarHeight: 60.0,
-              title: Text(_baseStore.getIsEditing ? 'EditTitle'.tr() : 'AddNewTitle'.tr(), style: appBarTitleDarkTextStyle),
-              centerTitle: false,
-              elevation: 2.0,
-              titleSpacing: 0.0,
-              leading: IconButton(
-                iconSize: 18.0,
-                icon: Icon(Icons.arrow_back_ios_new),
-                onPressed: () {
-                  FocusScopeNode currentFocus = FocusScope.of(context);
-                  if (!currentFocus.hasPrimaryFocus) {
-                    currentFocus.focusedChild?.unfocus();
-                  }
-
-                  Navigator.pop(context);
-                },
-              ),
-              iconTheme: IconThemeData(color: AppColors.BLACK),
+                Navigator.pop(context);
+              },
             ),
-            body: Column(
-              children: [
-                listViewWidget(),
-                buttonWidget(),
-              ],
-            ),
+            iconTheme: IconThemeData(color: AppColors.BLACK),
+          ),
+          body: Column(
+            children: [
+              listViewWidget(),
+              buttonWidget(),
+            ],
           ),
         ),
       ),

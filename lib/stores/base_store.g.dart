@@ -9,14 +9,6 @@ part of 'base_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$BaseStore on _BaseStore, Store {
-  Computed<DateTime?>? _$getCurrentBackPressTimeComputed;
-
-  @override
-  DateTime? get getCurrentBackPressTime =>
-      (_$getCurrentBackPressTimeComputed ??= Computed<DateTime?>(
-              () => super.getCurrentBackPressTime,
-              name: '_BaseStore.getCurrentBackPressTime'))
-          .value;
   Computed<TodoListBase?>? _$getTodoListDataComputed;
 
   @override
@@ -30,6 +22,13 @@ mixin _$BaseStore on _BaseStore, Store {
   bool get getIsEditing =>
       (_$getIsEditingComputed ??= Computed<bool>(() => super.getIsEditing,
               name: '_BaseStore.getIsEditing'))
+          .value;
+  Computed<bool>? _$getIsLoadedHiveComputed;
+
+  @override
+  bool get getIsLoadedHive =>
+      (_$getIsLoadedHiveComputed ??= Computed<bool>(() => super.getIsLoadedHive,
+              name: '_BaseStore.getIsLoadedHive'))
           .value;
   Computed<bool>? _$getKeyboardOpenedComputed;
 
@@ -45,23 +44,6 @@ mixin _$BaseStore on _BaseStore, Store {
           Computed<ObservableList<TodoListBase>>(() => super.getTodoList,
               name: '_BaseStore.getTodoList'))
       .value;
-
-  late final _$currentBackPressTimeAtom =
-      Atom(name: '_BaseStore.currentBackPressTime', context: context);
-
-  @override
-  DateTime? get currentBackPressTime {
-    _$currentBackPressTimeAtom.reportRead();
-    return super.currentBackPressTime;
-  }
-
-  @override
-  set currentBackPressTime(DateTime? value) {
-    _$currentBackPressTimeAtom.reportWrite(value, super.currentBackPressTime,
-        () {
-      super.currentBackPressTime = value;
-    });
-  }
 
   late final _$todoListDataAtom =
       Atom(name: '_BaseStore.todoListData', context: context);
@@ -111,6 +93,22 @@ mixin _$BaseStore on _BaseStore, Store {
     });
   }
 
+  late final _$isLoadedHiveAtom =
+      Atom(name: '_BaseStore.isLoadedHive', context: context);
+
+  @override
+  bool get isLoadedHive {
+    _$isLoadedHiveAtom.reportRead();
+    return super.isLoadedHive;
+  }
+
+  @override
+  set isLoadedHive(bool value) {
+    _$isLoadedHiveAtom.reportWrite(value, super.isLoadedHive, () {
+      super.isLoadedHive = value;
+    });
+  }
+
   late final _$todoListAtom =
       Atom(name: '_BaseStore.todoList', context: context);
 
@@ -131,8 +129,8 @@ mixin _$BaseStore on _BaseStore, Store {
       AsyncAction('_BaseStore.initBaseData', context: context);
 
   @override
-  Future initBaseData(BaseStore store) {
-    return _$initBaseDataAsyncAction.run(() => super.initBaseData(store));
+  Future initBaseData() {
+    return _$initBaseDataAsyncAction.run(() => super.initBaseData());
   }
 
   late final _$initDetailsAsyncAction =
@@ -151,28 +149,49 @@ mixin _$BaseStore on _BaseStore, Store {
     return _$disposeDetailsAsyncAction.run(() => super.disposeDetails());
   }
 
+  late final _$hiveGetTodoAsyncAction =
+      AsyncAction('_BaseStore.hiveGetTodo', context: context);
+
+  @override
+  Future hiveGetTodo() {
+    return _$hiveGetTodoAsyncAction.run(() => super.hiveGetTodo());
+  }
+
+  late final _$hiveSaveTodoAsyncAction =
+      AsyncAction('_BaseStore.hiveSaveTodo', context: context);
+
+  @override
+  Future hiveSaveTodo() {
+    return _$hiveSaveTodoAsyncAction.run(() => super.hiveSaveTodo());
+  }
+
   late final _$showCalenderPickerAsyncAction =
       AsyncAction('_BaseStore.showCalenderPicker', context: context);
 
   @override
-  Future showCalenderPicker(BuildContext context, bool isStartedDate) {
+  Future showCalenderPicker(BuildContext context, CalenderEnum enums) {
     return _$showCalenderPickerAsyncAction
-        .run(() => super.showCalenderPicker(context, isStartedDate));
+        .run(() => super.showCalenderPicker(context, enums));
+  }
+
+  late final _$saveAsyncAction =
+      AsyncAction('_BaseStore.save', context: context);
+
+  @override
+  Future save() {
+    return _$saveAsyncAction.run(() => super.save());
+  }
+
+  late final _$updateAsyncAction =
+      AsyncAction('_BaseStore.update', context: context);
+
+  @override
+  Future update() {
+    return _$updateAsyncAction.run(() => super.update());
   }
 
   late final _$_BaseStoreActionController =
       ActionController(name: '_BaseStore', context: context);
-
-  @override
-  dynamic setCurrentBackPressTime(DateTime value) {
-    final _$actionInfo = _$_BaseStoreActionController.startAction(
-        name: '_BaseStore.setCurrentBackPressTime');
-    try {
-      return super.setCurrentBackPressTime(value);
-    } finally {
-      _$_BaseStoreActionController.endAction(_$actionInfo);
-    }
-  }
 
   @override
   dynamic setTodoListData(TodoListBase? data) {
@@ -208,6 +227,17 @@ mixin _$BaseStore on _BaseStore, Store {
   }
 
   @override
+  dynamic setIsLoadedHive(bool data) {
+    final _$actionInfo = _$_BaseStoreActionController.startAction(
+        name: '_BaseStore.setIsLoadedHive');
+    try {
+      return super.setIsLoadedHive(data);
+    } finally {
+      _$_BaseStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic setTodoList(List<TodoListBase> data) {
     final _$actionInfo = _$_BaseStoreActionController.startAction(
         name: '_BaseStore.setTodoList');
@@ -219,11 +249,11 @@ mixin _$BaseStore on _BaseStore, Store {
   }
 
   @override
-  dynamic save() {
-    final _$actionInfo =
-        _$_BaseStoreActionController.startAction(name: '_BaseStore.save');
+  dynamic onBackPressed() {
+    final _$actionInfo = _$_BaseStoreActionController.startAction(
+        name: '_BaseStore.onBackPressed');
     try {
-      return super.save();
+      return super.onBackPressed();
     } finally {
       _$_BaseStoreActionController.endAction(_$actionInfo);
     }
@@ -232,14 +262,14 @@ mixin _$BaseStore on _BaseStore, Store {
   @override
   String toString() {
     return '''
-currentBackPressTime: ${currentBackPressTime},
 todoListData: ${todoListData},
 keyboardOpened: ${keyboardOpened},
 isEditing: ${isEditing},
+isLoadedHive: ${isLoadedHive},
 todoList: ${todoList},
-getCurrentBackPressTime: ${getCurrentBackPressTime},
 getTodoListData: ${getTodoListData},
 getIsEditing: ${getIsEditing},
+getIsLoadedHive: ${getIsLoadedHive},
 getKeyboardOpened: ${getKeyboardOpened},
 getTodoList: ${getTodoList}
     ''';

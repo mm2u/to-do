@@ -9,12 +9,13 @@ part of 'global_state.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$GlobalState on _GlobalState, Store {
-  Computed<BaseStore?>? _$getBaseStoreComputed;
+  Computed<DateTime?>? _$getCurrentBackPressTimeComputed;
 
   @override
-  BaseStore? get getBaseStore =>
-      (_$getBaseStoreComputed ??= Computed<BaseStore?>(() => super.getBaseStore,
-              name: '_GlobalState.getBaseStore'))
+  DateTime? get getCurrentBackPressTime =>
+      (_$getCurrentBackPressTimeComputed ??= Computed<DateTime?>(
+              () => super.getCurrentBackPressTime,
+              name: '_GlobalState.getCurrentBackPressTime'))
           .value;
   Computed<bool>? _$getIsInForegroundComputed;
 
@@ -24,19 +25,20 @@ mixin _$GlobalState on _GlobalState, Store {
           name: '_GlobalState.getIsInForeground'))
       .value;
 
-  late final _$baseStoreAtom =
-      Atom(name: '_GlobalState.baseStore', context: context);
+  late final _$currentBackPressTimeAtom =
+      Atom(name: '_GlobalState.currentBackPressTime', context: context);
 
   @override
-  BaseStore? get baseStore {
-    _$baseStoreAtom.reportRead();
-    return super.baseStore;
+  DateTime? get currentBackPressTime {
+    _$currentBackPressTimeAtom.reportRead();
+    return super.currentBackPressTime;
   }
 
   @override
-  set baseStore(BaseStore? value) {
-    _$baseStoreAtom.reportWrite(value, super.baseStore, () {
-      super.baseStore = value;
+  set currentBackPressTime(DateTime? value) {
+    _$currentBackPressTimeAtom.reportWrite(value, super.currentBackPressTime,
+        () {
+      super.currentBackPressTime = value;
     });
   }
 
@@ -76,11 +78,11 @@ mixin _$GlobalState on _GlobalState, Store {
       ActionController(name: '_GlobalState', context: context);
 
   @override
-  dynamic setBaseStore(BaseStore? value) {
+  dynamic setCurrentBackPressTime(DateTime value) {
     final _$actionInfo = _$_GlobalStateActionController.startAction(
-        name: '_GlobalState.setBaseStore');
+        name: '_GlobalState.setCurrentBackPressTime');
     try {
-      return super.setBaseStore(value);
+      return super.setCurrentBackPressTime(value);
     } finally {
       _$_GlobalStateActionController.endAction(_$actionInfo);
     }
@@ -100,9 +102,9 @@ mixin _$GlobalState on _GlobalState, Store {
   @override
   String toString() {
     return '''
-baseStore: ${baseStore},
+currentBackPressTime: ${currentBackPressTime},
 isInForeground: ${isInForeground},
-getBaseStore: ${getBaseStore},
+getCurrentBackPressTime: ${getCurrentBackPressTime},
 getIsInForeground: ${getIsInForeground}
     ''';
   }
