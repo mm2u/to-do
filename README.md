@@ -2,6 +2,12 @@
 
 This project is a simple to-do list for a Flutter application. It using a simple, scalable and powerful state management library inspired with MVC architectural pattern with very flexible dependency injection to easily instantiate any dependencies once and reuse multiple times across the app.
 
+## Features
+
+- State management with MobX.
+- Store NoSQL database using Hive.
+- Support English/Chinese based on device locale.
+
 ## ScreenShoot
 
 [![Screenshot-1654332604.png](https://i.postimg.cc/T3mQQyVv/Screenshot-1654332604.png)](https://postimg.cc/Mn6ypp39)
@@ -12,8 +18,11 @@ This project is a simple to-do list for a Flutter application. It using a simple
 [![Screenshot-1654332864.png](https://i.postimg.cc/tgNkQLvr/Screenshot-1654332864.png)](https://postimg.cc/Y4jYQyHg)
 [![Screenshot-1654334478.png](https://i.postimg.cc/rynhp2V3/Screenshot-1654334478.png)](https://postimg.cc/LhPky7Z3)
 
-## Features
+## Demo Video
 
-- State management with MobX.
-- Store NoSQL database using Hive.
-- Support English/Chinese based on device locale.
+https://user-images.githubusercontent.com/5955069/171995304-6ed54d23-2da4-4491-bfe3-1ce20ee64740.mp4
+
+
+## Demo Apk
+
+https://drive.google.com/file/d/1XOojZsN8Ay5ZUNw5upKoQ2uoKjnWnzKB/view
